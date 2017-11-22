@@ -7,12 +7,6 @@ lastItem2MaxY = _item2.y - 22
 selectedItem1 = 0
 
 
-###
-handleMoved = () ->
-	moveLine(0, 0, 100, 100)
-	moveLine(100, 100, 200, 0)
-###
-	
 # Move Line - 
 moveLine = (x1, y1, x2, y2) ->
 	
@@ -22,7 +16,8 @@ moveLine = (x1, y1, x2, y2) ->
 		backgroundColor: "black"
 		originX: 0
 		originY: 0
-	
+		parent: canvas
+		
 	# Set Position
 	targetLayer.x = x1
 	targetLayer.y = y1
@@ -50,10 +45,6 @@ calcAngle = (p1x,p1y,p2x,p2y) ->
 	angle = Math.atan2(p2x - p1x, p2y - p1y) * 180 / Math.PI + 180
 	return angle
 
-# Start in right position
-###
-handleMoved()
-###
 
 {Firebase} = require 'firebase'
 db = new Firebase
@@ -76,24 +67,42 @@ db.onChange "/dates/", (dates) ->
 		item.text = dataValue.index
 		item.y = lastItemMaxY + gutter
 		lastItemMaxY = item.maxY
-	
+
+		###
 		line = _line.copy()
 		line.parent = scroll.content
 		line.visible = true	
 		line.y = lastItemMaxY + 8
+		###
 			
 		if index is 1
 			db.onChange "/dates/" + dataValue.index + "/words", (draws) ->
 				drawsArray = _.toArray(draws)
 				print "onChange" + " size:" + drawsArray.length	
 
-				for item, index in list2.children
+				for item in list2.children
 					item.destroy()
 				
 				lastItem2MaxY = _item2.y - 22
 	
-				for drawValue, index in drawsArray
-					print drawValue
+				for drawValue, index in drawsArray	
+					for item in canvas.children
+						item.destroy()
+						
+					for draw, idx in drawValue
+						#print draw.x + ", " + draw.y
+						x = Utils.modulate(draw.x, [-100, 100], [0, Screen.width])
+						y = Utils.modulate(draw.y, [-100, 100], [0, Screen.height])
+						#print x + ", " + y
+						if idx > 0
+							print "(" + savedX + "," + savedY + ") > (" + x + "," + y + ")"
+							moveLine(savedX, savedY, x, y)
+							savedX = x
+							savedY = y
+						else 
+							savedX = x
+							savedY = y
+													
 					item = _item2.copy()
 					item.parent = scroll2.content
 					item.visible = true
@@ -101,10 +110,12 @@ db.onChange "/dates/", (dates) ->
 					item.y = lastItem2MaxY + gutter
 					lastItem2MaxY = item.maxY
 				
-					line = _line.copy()
+					###
+					line = _line2.copy()
 					line.parent = scroll2.content
 					line.visible = true	
 					line.y = lastItem2MaxY + 8
+					###
 		
 		item.onTap ->
 			print this.text	
@@ -113,13 +124,30 @@ db.onChange "/dates/", (dates) ->
 				drawsArray = _.toArray(draws)
 				print "onChange" + " size:" + drawsArray.length
 		
-				for item, index in list2.children
+				for item in list2.children
 					print "clear"
 					item.destroy()
 				
 				lastItem2MaxY = _item2.y - 22
 	
 				for drawValue, index in drawsArray
+					for item in canvas.children
+						item.destroy()
+									
+					for draw, idx in drawValue
+						#print draw.x + ", " + draw.y
+						x = Utils.modulate(draw.x, [-100, 100], [0, Screen.width])
+						y = Utils.modulate(draw.y, [-100, 100], [0, Screen.height])
+						#print x + ", " + y
+						if idx > 0
+							print "(" + savedX + "," + savedY + ") > (" + x + "," + y + ")"
+							moveLine(savedX, savedY, x, y)
+							savedX = x
+							savedY = y
+						else 
+							savedX = x
+							savedY = y
+							
 					item = _item2.copy()
 					item.parent = scroll2.content
 					item.visible = true
