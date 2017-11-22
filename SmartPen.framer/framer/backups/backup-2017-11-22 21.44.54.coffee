@@ -3,8 +3,48 @@ Framer.Extras.Hints.disable()
 # Variables
 gutter = 22
 lastItemMaxY = _item.y - 22
-lastItem2MaxY = _item2.y
+lastItem2MaxY = _item2.y - 22
 selectedItem1 = 0
+
+
+# Move Line - 
+moveLine = (x1, y1, x2, y2) ->
+	
+	targetLayer = new Layer
+		height: 1
+		width: 1
+		backgroundColor: "black"
+		originX: 0
+		originY: 0
+		parent: canvas
+		
+	# Set Position
+	targetLayer.x = x1
+	targetLayer.y = y1
+	
+	# Set "length"
+	dist = calcDistance(x1, y1, x2, y2)
+	targetLayer.width = dist
+	
+	# Sorry for bad math
+	angle = calcAngle(x1, y1, x2, y2)
+	targetLayer.rotation = -angle-90 
+
+# Math Helper Functions
+
+calcDistance = (p1x, p1y, p2x, p2y) ->
+  [a, b] = [p1x - p2x, p1y - p2y]
+  Math.sqrt Math.pow(a, 2) + Math.pow(b, 2)
+  
+class Point
+  constructor: (@x, @y) ->
+  draw: (ctx) -> ctx.fillRect @x, @y, 1, 1
+  toString: -> "(#{@x}, #{@y})"
+  
+calcAngle = (p1x,p1y,p2x,p2y) ->	
+	angle = Math.atan2(p2x - p1x, p2y - p1y) * 180 / Math.PI + 180
+	return angle
+
 
 {Firebase} = require 'firebase'
 db = new Firebase
@@ -17,7 +57,6 @@ db.onChange "/dates/", (dates) ->
 	for item, index in list.children
 		item.destroy()
 	
-	gutter = 22
 	lastItemMaxY = _item.y - 22
 		
 	for dataValue, index in datesArray
@@ -28,9 +67,51 @@ db.onChange "/dates/", (dates) ->
 		item.text = dataValue.index
 		item.y = lastItemMaxY + gutter
 		lastItemMaxY = item.maxY
-		
-		if index is 0
+
+		line = _line.copy()
+		line.parent = scroll.content
+		line.visible = true	
+		line.y = lastItemMaxY + 8
 			
+		if index is 1
+			db.onChange "/dates/" + dataValue.index + "/words", (draws) ->
+				drawsArray = _.toArray(draws)
+				print "onChange" + " size:" + drawsArray.length	
+
+				for item in list2.children
+					item.destroy()
+				
+				lastItem2MaxY = _item2.y - 22
+	
+				for drawValue, index in drawsArray	
+					for item in canvas.children
+						item.destroy()
+						
+					for draw, idx in drawValue
+						#print draw.x + ", " + draw.y
+						x = Utils.modulate(draw.x, [-100, 100], [0, Screen.width])
+						y = Utils.modulate(draw.y, [-100, 100], [0, Screen.height])
+						#print x + ", " + y
+						if idx > 0
+							print "(" + savedX + "," + savedY + ") > (" + x + "," + y + ")"
+							moveLine(savedX, savedY, x, y)
+							savedX = x
+							savedY = y
+						else 
+							savedX = x
+							savedY = y
+													
+					item = _item2.copy()
+					item.parent = scroll2.content
+					item.visible = true
+					item.text = index + 1
+					item.y = lastItem2MaxY + gutter
+					lastItem2MaxY = item.maxY
+				
+					line = _line.copy()
+					line.parent = scroll2.content
+					line.visible = true	
+					line.y = lastItem2MaxY + 8
 		
 		item.onTap ->
 			print this.text	
@@ -39,11 +120,42 @@ db.onChange "/dates/", (dates) ->
 				drawsArray = _.toArray(draws)
 				print "onChange" + " size:" + drawsArray.length
 		
-		line = _line.copy()
-		line.parent = scroll.content
-		line.visible = true	
-		line.y = lastItemMaxY + 8
-		
+				for item in list2.children
+					print "clear"
+					item.destroy()
+				
+				lastItem2MaxY = _item2.y - 22
+	
+				for drawValue, index in drawsArray
+					for item in canvas.children
+						item.destroy()
+									
+					for draw, idx in drawValue
+						#print draw.x + ", " + draw.y
+						x = Utils.modulate(draw.x, [-100, 100], [0, Screen.width])
+						y = Utils.modulate(draw.y, [-100, 100], [0, Screen.height])
+						#print x + ", " + y
+						if idx > 0
+							print "(" + savedX + "," + savedY + ") > (" + x + "," + y + ")"
+							moveLine(savedX, savedY, x, y)
+							savedX = x
+							savedY = y
+						else 
+							savedX = x
+							savedY = y
+							
+					item = _item2.copy()
+					item.parent = scroll2.content
+					item.visible = true
+					item.text = index + 1
+					item.y = lastItem2MaxY + gutter
+					lastItem2MaxY = item.maxY
+				
+					line = _line.copy()
+					line.parent = scroll2.content
+					line.visible = true	
+					line.y = lastItem2MaxY + 8
+
 ###
 db.get "/dateIndex/", (dateIndex) ->
 	dateIndexArray = _.toArray(dateIndex)

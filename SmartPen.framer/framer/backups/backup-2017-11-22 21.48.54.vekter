@@ -51,7 +51,7 @@
                 "opacity" : 1,
                 "contrastEnabled" : 0,
                 "locked" : false,
-                "left" : 76,
+                "left" : 30,
                 "styledText" : {
                   "blocks" : [
                     {
@@ -114,7 +114,7 @@
                 "blendingMode" : "normal",
                 "invert" : 0,
                 "sepia" : 0,
-                "centerAnchorX" : 0.1170138888888889,
+                "centerAnchorX" : 0.08506944444444445,
                 "blurEnabled" : 0,
                 "shadows" : [
                   {
@@ -275,7 +275,7 @@
                 "children" : [
 
                 ],
-                "centerAnchorX" : 0.02986111111111111,
+                "centerAnchorX" : 0.01597222222222222,
                 "id" : "HAGeeES~",
                 "exportOptions" : [
 
@@ -287,9 +287,9 @@
                 "widthFactor" : null,
                 "blendingEnabled" : 0,
                 "grayscale" : 0,
-                "top" : null,
+                "top" : 32,
                 "saturate" : 100,
-                "left" : 27,
+                "left" : 7,
                 "locked" : false,
                 "sepiaEnabled" : 0,
                 "blur" : 12,
@@ -306,7 +306,7 @@
                 "blendingMode" : "normal",
                 "originalFilename" : "",
                 "contrast" : 100,
-                "centerAnchorY" : 0.5,
+                "centerAnchorY" : 0.48,
                 "height" : 32,
                 "borderWidth" : 1,
                 "hueRotate" : 0,
