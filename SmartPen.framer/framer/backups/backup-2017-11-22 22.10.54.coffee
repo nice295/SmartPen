@@ -67,13 +67,9 @@ db.onChange "/dates/", (dates) ->
 		item.y = lastItemMaxY + gutter
 		lastItemMaxY = item.maxY
 
-		for item in list.children
-			item.opacity = 0.5
-				
-		if index is 0						
-			db.onChange "/dates/" + dataValue.index + "/words", (draws) ->
+		if index is 1
+			db.get "/dates/" + dataValue.index + "/words", (draws) ->
 				drawsArray = _.toArray(draws)
-				keys = _.keys(draws)
 				print "onChange" + " size:" + drawsArray.length	
 
 				for item in list2.children
@@ -81,15 +77,7 @@ db.onChange "/dates/", (dates) ->
 				
 				lastItem2MaxY = _item2.y - 22
 	
-				for key in keys	
-					item = _item2.copy()
-					item.parent = scroll2.content
-					item.visible = true
-					item.text = key
-					item.y = lastItem2MaxY + gutter
-					lastItem2MaxY = item.maxY	
-					
-				for drawValue, index in drawsArray						
+				for drawValue, index in drawsArray	
 					for item in canvas.children
 						item.destroy()
 						
@@ -105,36 +93,30 @@ db.onChange "/dates/", (dates) ->
 							savedY = y
 						else 
 							savedX = x
-							savedY = y				
-	
-		item.onTap ->
-			print this.text
-			
-			for item in list.children
-				item.opacity = 0.5		
-			this.opacity = 1.0
-			
-			selectedItem1 = this.text
-			db.onChange "/dates/" + this.text + "/words", (draws) ->
-				drawsArray = _.toArray(draws)
-				keys = _.keys(draws)
-				print "onChange" + " size:" + drawsArray.length
-		
-				for item in list2.children
-					item.destroy()
-				
-				lastItem2MaxY = _item2.y - 22
-
-				for key in keys	
+							savedY = y
+													
 					item = _item2.copy()
 					item.parent = scroll2.content
 					item.visible = true
-					item.text = key
+					item.text = index + 1
 					item.y = lastItem2MaxY + gutter
-					lastItem2MaxY = item.maxY		
-
+					lastItem2MaxY = item.maxY
+				
+	
+		item.onTap ->
+			print this.text	
+			selectedItem1 = this.text
+			db.get "/dates/" + this.text + "/words", (draws) ->
+				drawsArray = _.toArray(draws)
+				print "onChange" + " size:" + drawsArray.length
+		
+				for item in list2.children
+					print "clear"
+					item.destroy()
+				
+				lastItem2MaxY = _item2.y - 22
+	
 				for drawValue, index in drawsArray
-					
 					for item in canvas.children
 						item.destroy()
 									
@@ -151,7 +133,13 @@ db.onChange "/dates/", (dates) ->
 						else 
 							savedX = x
 							savedY = y
-
+							
+					item = _item2.copy()
+					item.parent = scroll2.content
+					item.visible = true
+					item.text = index + 1
+					item.y = lastItem2MaxY + gutter
+					lastItem2MaxY = item.maxY
 				
 
 ###

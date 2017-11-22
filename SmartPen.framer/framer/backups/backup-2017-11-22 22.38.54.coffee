@@ -67,10 +67,7 @@ db.onChange "/dates/", (dates) ->
 		item.y = lastItemMaxY + gutter
 		lastItemMaxY = item.maxY
 
-		for item in list.children
-			item.opacity = 0.5
-				
-		if index is 0						
+		if index is 0
 			db.onChange "/dates/" + dataValue.index + "/words", (draws) ->
 				drawsArray = _.toArray(draws)
 				keys = _.keys(draws)
@@ -105,15 +102,13 @@ db.onChange "/dates/", (dates) ->
 							savedY = y
 						else 
 							savedX = x
-							savedY = y				
+							savedY = y
+													
+
+				
 	
 		item.onTap ->
-			print this.text
-			
-			for item in list.children
-				item.opacity = 0.5		
-			this.opacity = 1.0
-			
+			print this.text	
 			selectedItem1 = this.text
 			db.onChange "/dates/" + this.text + "/words", (draws) ->
 				drawsArray = _.toArray(draws)
@@ -121,6 +116,7 @@ db.onChange "/dates/", (dates) ->
 				print "onChange" + " size:" + drawsArray.length
 		
 				for item in list2.children
+					print "clear"
 					item.destroy()
 				
 				lastItem2MaxY = _item2.y - 22

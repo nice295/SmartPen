@@ -6,7 +6,6 @@ lastItemMaxY = _item.y - 22
 lastItem2MaxY = _item2.y - 22
 selectedItem1 = 0
 
-
 # Move Line - 
 moveLine = (x1, y1, x2, y2) ->
 	
@@ -68,28 +67,27 @@ db.onChange "/dates/", (dates) ->
 		item.y = lastItemMaxY + gutter
 		lastItemMaxY = item.maxY
 
-		line = _line.copy()
-		line.parent = scroll.content
-		line.visible = true	
-		line.y = lastItemMaxY + 8
-			
-		if index is 1
+		if index is 0
 			db.onChange "/dates/" + dataValue.index + "/words", (draws) ->
 				drawsArray = _.toArray(draws)
 				print "onChange" + " size:" + drawsArray.length	
 
-				for item, index in list2.children
+				for item in list2.children
 					item.destroy()
 				
 				lastItem2MaxY = _item2.y - 22
 	
-				for drawValue, index in drawsArray	
+				for drawValue, index in drawsArray						
+					for item in canvas.children
+						item.destroy()
+						
 					for draw, idx in drawValue
-						print draw.x + ", " + draw.y
+						#print draw.x + ", " + draw.y
 						x = Utils.modulate(draw.x, [-100, 100], [0, Screen.width])
 						y = Utils.modulate(draw.y, [-100, 100], [0, Screen.height])
-						print x + ", " + y
+						#print x + ", " + y
 						if idx > 0
+							print "(" + savedX + "," + savedY + ") > (" + x + "," + y + ")"
 							moveLine(savedX, savedY, x, y)
 							savedX = x
 							savedY = y
@@ -104,11 +102,7 @@ db.onChange "/dates/", (dates) ->
 					item.y = lastItem2MaxY + gutter
 					lastItem2MaxY = item.maxY
 				
-					line = _line.copy()
-					line.parent = scroll2.content
-					line.visible = true	
-					line.y = lastItem2MaxY + 8
-		
+	
 		item.onTap ->
 			print this.text	
 			selectedItem1 = this.text
@@ -116,13 +110,31 @@ db.onChange "/dates/", (dates) ->
 				drawsArray = _.toArray(draws)
 				print "onChange" + " size:" + drawsArray.length
 		
-				for item, index in list2.children
+				for item in list2.children
 					print "clear"
 					item.destroy()
 				
 				lastItem2MaxY = _item2.y - 22
 	
 				for drawValue, index in drawsArray
+					print JSON.stringify(drawValue)
+					for item in canvas.children
+						item.destroy()
+									
+					for draw, idx in drawValue
+						#print draw.x + ", " + draw.y
+						x = Utils.modulate(draw.x, [-100, 100], [0, Screen.width])
+						y = Utils.modulate(draw.y, [-100, 100], [0, Screen.height])
+						#print x + ", " + y
+						if idx > 0
+							print "(" + savedX + "," + savedY + ") > (" + x + "," + y + ")"
+							moveLine(savedX, savedY, x, y)
+							savedX = x
+							savedY = y
+						else 
+							savedX = x
+							savedY = y
+							
 					item = _item2.copy()
 					item.parent = scroll2.content
 					item.visible = true
@@ -130,10 +142,6 @@ db.onChange "/dates/", (dates) ->
 					item.y = lastItem2MaxY + gutter
 					lastItem2MaxY = item.maxY
 				
-					line = _line.copy()
-					line.parent = scroll2.content
-					line.visible = true	
-					line.y = lastItem2MaxY + 8
 
 ###
 db.get "/dateIndex/", (dateIndex) ->
@@ -150,10 +158,6 @@ db.get "/dateIndex/", (dateIndex) ->
 		item.onTap ->
 			#print this.text	
 		
-		line = _line.copy()
-		line.parent = scroll.content
-		line.visible = true	
-		line.y = lastItemMaxY + 4
 ###		
 
 ###	
